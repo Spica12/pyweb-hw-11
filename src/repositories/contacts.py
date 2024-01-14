@@ -2,6 +2,8 @@ from models.contact import ContactModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
 
+from datetime import datetime, timedelta
+
 from schemas.contact import ContactSchema, ContactCreateSchema
 
 
@@ -20,6 +22,8 @@ class ContactRepo:
         self.db.add(contact)
         await self.db.commit()
         await self.db.refresh(contact)
+
+        return contact
 
     async def get_by_id(self, contact_id: int):
         stmt = select(ContactModel).filter_by(id=contact_id)
@@ -84,3 +88,16 @@ class ContactRepo:
         result = await self.db.execute(stmt)
 
         return result.scalars().all()
+
+    async def get_upcoming_birthday(self, limit: int, offset: int):
+        today = datetime.now().date()
+        next_week = today + timedelta(days=7)
+        stmt = (
+            select(ContactModel)
+            .where(ContactModel.birthday.between(today, next_week))
+            .offset(offset)
+            .limit(limit)
+        )
+        upcoming_birthdays = await self.db.execute(stmt)
+
+        return upcoming_birthdays.scalars().all()

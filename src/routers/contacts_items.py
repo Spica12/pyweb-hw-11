@@ -32,7 +32,7 @@ async def get_contact_by_id(
     return contact
 
 
-@router.get("/{key_word}", response_model=list[ContactSchema])
+@router.get("/key_word/{key_word}", response_model=list[ContactSchema])
 async def find_contacts(
     key_word: str = Path(..., title="Key word"),
     db: AsyncSession = Depends(get_db),
@@ -77,3 +77,16 @@ async def delete_contact(
     contact = await ContactService(db=db).delete_contact(contact_id)
 
     return contact
+
+
+@router.get("/birthday", response_model=list[ContactSchema])
+async def upcoming_birthday(
+    limit: int = Query(default=10, ge=10, le=500),
+    offset: int = Query(default=0, ge=0),
+    db: AsyncSession = Depends(get_db),
+):
+    contacts = await ContactService(db=db).get_upcoming_birthday(
+        limit=limit, offset=offset
+    )
+
+    return contacts

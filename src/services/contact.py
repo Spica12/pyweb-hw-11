@@ -48,3 +48,8 @@ class ContactService:
         contacts.update(contacts_by_email)
 
         return list(contacts)
+
+    async def get_upcoming_birthday(self, limit: int, offset: int):
+        contacts = await self.repo.get_upcoming_birthday(limit=limit, offset=offset)
+
+        return contacts
