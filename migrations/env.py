@@ -8,7 +8,7 @@ import asyncio
 from alembic import context
 
 from src.conf.config import config as app_config
-from src.models.base import Base
+from src.models.contact import Base
 
 
 # this is the Alembic Config object, which provides
